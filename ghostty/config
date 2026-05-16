@@ -1,0 +1,17 @@
+theme = cutppuccin-mocha.conf
+
+font-size = 19
+background-blur-radius = 20
+mouse-hide-while-typing = true
+window-decoration = true
+macos-option-as-alt = true
+
+# Word navigation for shells (Option + Arrows)
+keybind = opt+left=esc:b
+keybind = opt+right=esc:f
+
+background-opacity=0.7
+
+# Fix Cmd+Left triggering tmux prefix (Ctrl-a)
+keybind = cmd+left=text:\x1bOH
+keybind = cmd+right=text:\x1bOF

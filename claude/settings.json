@@ -1,0 +1,66 @@
+{
+  "env": {
+    "ANTHROPIC_MODEL": "claude-opus-4-7"
+  },
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "matcher": ".*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.config/tmux/claude_status.sh working"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": ".*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.config/tmux/claude_status.sh done"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.config/tmux/claude_status.sh waiting"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.config/tmux/claude_status.sh working"
+          }
+        ]
+      }
+    ]
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "/Users/barziv/Code/saydo/momentum/.claude/statusline.sh"
+  },
+  "enabledPlugins": {
+    "slack@claude-plugins-official": true,
+    "chrome-devtools-mcp@chrome-devtools-plugins": true
+  },
+  "effortLevel": "medium",
+  "theme": "dark-ansi",
+  "agentPushNotifEnabled": true,
+  "skipAutoPermissionPrompt": true,
+  "permissions": {
+    "defaultMode": "auto"
+  }
+}
