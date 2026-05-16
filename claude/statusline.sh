@@ -4,18 +4,6 @@ input=$(cat)
 # Get workspace directory from session data
 WORKSPACE=$(echo "$input" | jq -r '.workspace.current_dir // empty')
 
-# Model info
-MODEL=$(echo "$input" | jq -r '.model.display_name // empty')
-
-# Context window usage
-CONTEXT_USED=$(echo "$input" | jq -r '.context_window.used_percentage // empty')
-
-# Git branch
-GIT_BRANCH=""
-if [ -n "$WORKSPACE" ] && command -v git >/dev/null 2>&1; then
-  GIT_BRANCH=$(git -C "$WORKSPACE" rev-parse --abbrev-ref HEAD 2>/dev/null)
-fi
-
 API_PORT=""
 UI_PORT=""
 MONGO_URI=""
@@ -98,56 +86,18 @@ if [ -n "$API_PORT" ]; then
   fi
 fi
 
-# Extract issue key from branch (e.g. "int-274")
-ISSUE_KEY=""
-if [ -n "$GIT_BRANCH" ]; then
-  ISSUE_KEY=$(echo "$GIT_BRANCH" | grep -oE 'int-[0-9]+' | head -1 | tr '[:lower:]' '[:upper:]')
-fi
-
-# Line 1: Model | Ctx% | Issue key
-LINE1=""
-if [ -n "$MODEL" ]; then
-  LINE1="$MODEL"
-fi
-if [ -n "$CONTEXT_USED" ]; then
-  LINE1="${LINE1:+$LINE1 | }Ctx:${CONTEXT_USED}%"
-fi
-if [ -n "$ISSUE_KEY" ]; then
-  LINE1="${LINE1:+$LINE1 | }$ISSUE_KEY"
-fi
-
-# Line 2: Env | Server status | DB
-LINE2=""
+# Output: Env | Server status | DB
+LINE=""
 if [ -n "$APP_ENV" ]; then
-  LINE2="env:${APP_ENV}"
+  LINE="env:${APP_ENV}"
 fi
 if [ -n "$SERVER_STATUS" ]; then
-  LINE2="${LINE2:+$LINE2 | }$SERVER_STATUS"
+  LINE="${LINE:+$LINE | }$SERVER_STATUS"
 fi
 if [ -n "$DB_STATUS" ]; then
-  LINE2="${LINE2:+$LINE2 | }$DB_STATUS"
+  LINE="${LINE:+$LINE | }$DB_STATUS"
 fi
 
-# Line 3: Branch slug (e.g. "shayshalem/fix/int-274-prevent-removing-foo" → "prevent-removing-foo")
-LINE3=""
-if [ -n "$GIT_BRANCH" ]; then
-  # Strip everything up to and including the issue key (int-123-)
-  SLUG=$(echo "$GIT_BRANCH" | sed -E 's|^.*/int-[0-9]+-||')
-  if [ "$SLUG" = "$GIT_BRANCH" ]; then
-    # No issue key found — fallback: last path segment
-    SLUG=$(echo "$GIT_BRANCH" | rev | cut -d/ -f1 | rev)
-  fi
-  LINE3="$SLUG"
-fi
-
-if [ -n "$LINE1" ]; then
-  echo "$LINE1"
-fi
-
-if [ -n "$LINE2" ]; then
-  echo -e "$LINE2"
-fi
-
-if [ -n "$LINE3" ]; then
-  echo "$LINE3"
+if [ -n "$LINE" ]; then
+  echo -e "$LINE"
 fi
