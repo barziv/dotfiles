@@ -101,7 +101,7 @@ fi
 # Claude Code Max quota window (5h rolling) — requires `ccusage` installed
 QUOTA=""
 if command -v ccusage >/dev/null 2>&1; then
-  CC_BLOCK=$(ccusage blocks --active --json 2>/dev/null | jq -r '.blocks[0] // empty' 2>/dev/null)
+  CC_BLOCK=$(ccusage blocks --active --json --token-limit max 2>/dev/null | jq -r '.blocks[0] // empty' 2>/dev/null)
   if [ -n "$CC_BLOCK" ] && [ "$CC_BLOCK" != "null" ]; then
     PCT=$(echo "$CC_BLOCK" | jq -r '.tokenLimitStatus.percentUsed // empty')
     END=$(echo "$CC_BLOCK" | jq -r '.endTime // empty')
@@ -114,7 +114,7 @@ if command -v ccusage >/dev/null 2>&1; then
       if [ -n "$EPOCH" ]; then
         RESET=$(date -r "$EPOCH" "+%H:%M" 2>/dev/null)
         if [ -n "$RESET" ]; then
-          QUOTA="quota:${PCT_INT}% · resets ${RESET}"
+          QUOTA="used:${PCT_INT}% · resets ${RESET}"
         fi
       fi
     fi
