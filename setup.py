@@ -30,6 +30,7 @@ class Secret:
 
 SECRETS: list[Secret] = [
     Secret("CONTEXT7_API_KEY", "Context7 API key (used by Gemini MCP config)"),
+    Secret("RENDER_API_KEY",   "Render API key (used by render MCP across claude/opencode/gemini)"),
 ]
 
 # Excluded from directory diff walks.

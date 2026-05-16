@@ -29,6 +29,16 @@
         "mcp-remote",
         "https://mcp.linear.app/mcp"
       ]
+    },
+    "render": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-remote",
+        "https://mcp.render.com/mcp",
+        "--header",
+        "Authorization: Bearer $RENDER_API_KEY"
+      ]
     }
   },
   "security": {
