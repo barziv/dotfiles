@@ -62,7 +62,7 @@
   },
   "statusLine": {
     "type": "command",
-    "command": "/Users/barziv/Code/saydo/momentum/.claude/statusline.sh"
+    "command": "~/.claude/statusline.sh"
   },
   "enabledPlugins": {
     "slack@claude-plugins-official": true,
