@@ -11,6 +11,8 @@ import difflib
 import filecmp
 import getpass
 import os
+import shutil
+import subprocess
 import sys
 from dataclasses import dataclass
 from datetime import datetime
@@ -39,6 +41,25 @@ EXECUTABLES: list[str] = [
     "claude/statusline.sh",
     "tmux/claude_status.sh",
     "tmux/scripts/cal.sh",
+]
+
+# Global packages installed via --packages.
+NPM_GLOBALS: list[str] = [
+    "ccstatusline",
+    "@google/gemini-cli",
+    "opencode-ai",
+    "pnpm",
+    "mcp-mongo-server",
+]
+
+# Python CLI tools installed via pipx (each in its own venv). Libraries don't
+# belong here — they go in PIP_USER. See README for the distinction.
+PIPX_TOOLS: list[str] = []
+
+# Python libraries installed via `pip install --user` (importable from any
+# Python invocation that sees ~/.local/site-packages).
+PIP_USER: list[str] = [
+    "requests",
 ]
 
 # Excluded from directory diff walks.
@@ -255,6 +276,83 @@ def apply_pair(pair: Pair, status: str) -> None:
     print(green(f"  linked    {dst} -> {pair.src}"))
 
 
+# --- Package install --------------------------------------------------------
+
+def _run(cmd: list[str]) -> int:
+    print(cyan(f"  $ {' '.join(cmd)}"))
+    return subprocess.run(cmd).returncode
+
+
+def install_npm_globals() -> None:
+    if not NPM_GLOBALS:
+        return
+    if not shutil.which("npm"):
+        print(yellow("  npm not found; skipping NPM globals"))
+        return
+    listed = subprocess.run(
+        ["npm", "list", "-g", "--depth=0", "--parseable"],
+        capture_output=True, text=True
+    ).stdout
+    installed = {os.path.basename(line) for line in listed.splitlines() if line}
+    for pkg in NPM_GLOBALS:
+        # scoped packages: install name `@scope/pkg`, dir name `pkg` under @scope
+        name = pkg.split("/")[-1] if pkg.startswith("@") else pkg
+        if name in installed:
+            print(dim(f"  npm {pkg} already installed"))
+            continue
+        _run(["npm", "install", "-g", pkg])
+
+
+def install_pipx_tools() -> None:
+    if not PIPX_TOOLS:
+        return
+    if not shutil.which("pipx"):
+        if shutil.which("brew"):
+            _run(["brew", "install", "pipx"])
+            _run(["pipx", "ensurepath"])
+        else:
+            print(yellow("  pipx not found and brew unavailable; skipping pipx tools"))
+            return
+    listed = subprocess.run(
+        ["pipx", "list", "--short"], capture_output=True, text=True
+    ).stdout
+    installed = {line.split()[0] for line in listed.splitlines() if line.strip()}
+    for pkg in PIPX_TOOLS:
+        if pkg in installed:
+            print(dim(f"  pipx {pkg} already installed"))
+            continue
+        _run(["pipx", "install", pkg])
+
+
+def install_pip_user() -> None:
+    if not PIP_USER:
+        return
+    pip = shutil.which("pip") or shutil.which("pip3")
+    if not pip:
+        print(yellow("  pip not found; skipping pip --user packages"))
+        return
+    listed = subprocess.run(
+        [pip, "list", "--user", "--format=freeze"], capture_output=True, text=True
+    ).stdout
+    installed = {line.split("==")[0].lower() for line in listed.splitlines() if "==" in line}
+    for pkg in PIP_USER:
+        if pkg.lower() in installed:
+            print(dim(f"  pip --user {pkg} already installed"))
+            continue
+        _run([pip, "install", "--user", pkg])
+
+
+def install_packages() -> None:
+    print(cyan("Installing NPM globals:"))
+    install_npm_globals()
+    if PIPX_TOOLS:
+        print(cyan("\nInstalling pipx tools:"))
+        install_pipx_tools()
+    if PIP_USER:
+        print(cyan("\nInstalling pip --user packages:"))
+        install_pip_user()
+
+
 # --- Secrets ----------------------------------------------------------------
 
 def read_secrets_env() -> dict[str, str]:
@@ -361,7 +459,13 @@ def main() -> int:
                         help="actually install symlinks (default: dry-run)")
     parser.add_argument("--only", nargs="+", metavar="NAME", default=None,
                         help="restrict to specific top-level entries (e.g. zsh nvim)")
+    parser.add_argument("--packages", action="store_true",
+                        help="install global npm/pipx/pip-user packages and exit")
     args = parser.parse_args()
+
+    if args.packages:
+        install_packages()
+        return 0
 
     entries = MAPPINGS
     if args.only:

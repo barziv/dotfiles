@@ -37,6 +37,14 @@ Restrict to specific entries with `--only`:
 ./setup.py --only nvim zsh --apply
 ```
 
+Install global packages (npm globals, pipx tools, pip --user libraries) as a separate step:
+
+```sh
+./setup.py --packages
+```
+
+The package lists live at the top of `setup.py` (`NPM_GLOBALS`, `PIPX_TOOLS`, `PIP_USER`). Idempotent — packages already present are skipped.
+
 ## Adding a new tool
 
 1. Create a new top-level directory named after the tool.
