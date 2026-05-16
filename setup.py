@@ -33,6 +33,14 @@ SECRETS: list[Secret] = [
     Secret("RENDER_API_KEY",   "Render API key (used by render MCP across claude/opencode/gemini)"),
 ]
 
+# Repo-relative paths that must be executable. Symlink destinations inherit
+# perms from the source, so ensuring +x here covers every consumer.
+EXECUTABLES: list[str] = [
+    "claude/statusline.sh",
+    "tmux/claude_status.sh",
+    "tmux/scripts/cal.sh",
+]
+
 # Excluded from directory diff walks.
 DIFF_SKIP = {"node_modules", ".git", ".DS_Store", "plugins", "history.txt", "vendor"}
 
@@ -365,6 +373,11 @@ def main() -> int:
             return 2
 
     if args.apply:
+        for rel in EXECUTABLES:
+            p = REPO / rel
+            if p.exists() and not (p.stat().st_mode & 0o111):
+                p.chmod(p.stat().st_mode | 0o111)
+                print(dim(f"  chmod +x {rel}"))
         values = collect_secrets()
         render_zsh_secrets(values)
         render_nu_secrets(values)

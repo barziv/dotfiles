@@ -98,19 +98,45 @@ if [ -n "$API_PORT" ]; then
   fi
 fi
 
+# Claude Code Max quota window (5h rolling) — requires `ccusage` installed
+QUOTA=""
+if command -v ccusage >/dev/null 2>&1; then
+  CC_BLOCK=$(ccusage blocks --active --json 2>/dev/null | jq -r '.blocks[0] // empty' 2>/dev/null)
+  if [ -n "$CC_BLOCK" ] && [ "$CC_BLOCK" != "null" ]; then
+    PCT=$(echo "$CC_BLOCK" | jq -r '.tokenLimitStatus.percentUsed // empty')
+    END=$(echo "$CC_BLOCK" | jq -r '.endTime // empty')
+    if [ -n "$PCT" ] && [ -n "$END" ]; then
+      # Normalize percent (0-1 fraction or 0-100)
+      PCT_INT=$(echo "$PCT" | awk '{if ($1+0 <= 1) print int($1*100); else print int($1)}')
+      # Convert ISO endTime (UTC) → local HH:MM via epoch
+      END_CLEAN=$(echo "$END" | sed -E 's/\.[0-9]+Z?$//;s/Z$//')
+      EPOCH=$(TZ=UTC date -j -f "%Y-%m-%dT%H:%M:%S" "$END_CLEAN" "+%s" 2>/dev/null)
+      if [ -n "$EPOCH" ]; then
+        RESET=$(date -r "$EPOCH" "+%H:%M" 2>/dev/null)
+        if [ -n "$RESET" ]; then
+          QUOTA="quota:${PCT_INT}% · resets ${RESET}"
+        fi
+      fi
+    fi
+  fi
+fi
+
 # Extract issue key from branch (e.g. "int-274")
 ISSUE_KEY=""
 if [ -n "$GIT_BRANCH" ]; then
   ISSUE_KEY=$(echo "$GIT_BRANCH" | grep -oE 'int-[0-9]+' | head -1 | tr '[:lower:]' '[:upper:]')
 fi
 
-# Line 1: Model | Ctx% | Issue key
+# Line 1: Model | Ctx% | Quota | Issue key
 LINE1=""
 if [ -n "$MODEL" ]; then
   LINE1="$MODEL"
 fi
 if [ -n "$CONTEXT_USED" ]; then
   LINE1="${LINE1:+$LINE1 | }Ctx:${CONTEXT_USED}%"
+fi
+if [ -n "$QUOTA" ]; then
+  LINE1="${LINE1:+$LINE1 | }$QUOTA"
 fi
 if [ -n "$ISSUE_KEY" ]; then
   LINE1="${LINE1:+$LINE1 | }$ISSUE_KEY"
