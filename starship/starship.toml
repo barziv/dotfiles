@@ -18,6 +18,7 @@ error_symbol = '[🦆 〉](bold red)'
 [hostname]
 disabled=false
 ssh_only = false
+style = 'green'
 format = '[$ssh_symbol$hostname]($style) | '
 
 [nodejs]
