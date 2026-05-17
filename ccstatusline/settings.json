@@ -1,0 +1,83 @@
+{
+  "version": 3,
+  "lines": [
+    [
+      {
+        "id": "1",
+        "type": "model",
+        "color": "brightBlue"
+      },
+      {
+        "id": "2",
+        "type": "separator"
+      },
+      {
+        "id": "3",
+        "type": "context-bar",
+        "color": "brightCyan",
+        "metadata": {
+          "display": "slider"
+        }
+      },
+      {
+        "id": "4",
+        "type": "separator"
+      },
+      {
+        "id": "7",
+        "type": "session-usage",
+        "color": "white",
+        "metadata": {
+          "display": "slider"
+        }
+      }
+    ],
+    [
+      {
+        "id": "b3305b26-ea19-4e96-8b1f-076a6300fc5d",
+        "type": "custom-command",
+        "commandPath": "~/.claude/statusline.sh"
+      }
+    ],
+    [
+      {
+        "id": "abababbb-63ad-457c-80cd-3f9efeecd1b9",
+        "type": "custom-command",
+        "color": "magenta",
+        "commandPath": "git rev-parse --abbrev-ref HEAD 2>/dev/null | sed -E 's|^.*/int-[0-9]+-||;s|.*/||'"
+      },
+      {
+        "id": "ab148c59-cfdf-4743-a4ba-ac47e6ddd9c8",
+        "type": "separator"
+      },
+      {
+        "id": "2b475e8b-a178-4fdb-abac-34891d644a74",
+        "type": "git-changes",
+        "color": "magenta"
+      }
+    ]
+  ],
+  "flexMode": "full-minus-40",
+  "compactThreshold": 60,
+  "colorLevel": 2,
+  "inheritSeparatorColors": false,
+  "globalBold": false,
+  "minimalistMode": false,
+  "powerline": {
+    "enabled": false,
+    "separators": [
+      ""
+    ],
+    "separatorInvertBackground": [
+      false
+    ],
+    "startCaps": [],
+    "endCaps": [],
+    "autoAlign": false,
+    "continueThemeAcrossLines": false
+  },
+  "installation": {
+    "method": "pinned",
+    "installedVersion": "2.2.18"
+  }
+}

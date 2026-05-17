@@ -83,6 +83,7 @@ MAPPINGS: list[Entry] = [
     Entry("opencode", "~/.config/opencode",                         "folder"),
     Entry("tmux",     "~/.config/tmux",                             "folder"),
     Entry("nushell",  "~/Library/Application Support/nushell",      "folder"),
+    Entry("ccstatusline", "~/.config/ccstatusline",                  "folder"),
     Entry("claude",   "~/.claude",                                  "per-file"),
     Entry("gh",       "~/.config/gh",                               "per-file"),
     Entry("gemini",   "~/.gemini",                                  "per-file"),
