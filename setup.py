@@ -78,6 +78,7 @@ BREW_PACKAGES: list[str] = [
     "lazygit",
     "ffmpeg",
     "hugo",
+    "awscli",
     "hashicorp/tap/terraform",
 ]
 
