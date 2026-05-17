@@ -37,13 +37,13 @@ Restrict to specific entries with `--only`:
 ./setup.py --only nvim zsh --apply
 ```
 
-Install global packages (npm globals, pipx tools, pip --user libraries) as a separate step:
+Install global packages (Homebrew formulae, npm globals, pipx tools, pip --user libraries) and tmux plugins as a separate step:
 
 ```sh
 ./setup.py --packages
 ```
 
-The package lists live at the top of `setup.py` (`NPM_GLOBALS`, `PIPX_TOOLS`, `PIP_USER`). Idempotent — packages already present are skipped.
+The package lists live at the top of `setup.py` (`BREW_PACKAGES`, `BREW_CASKS`, `NPM_GLOBALS`, `PIPX_TOOLS`, `PIP_USER`). Idempotent — packages already present are skipped. Homebrew formulae and casks list the missing items and prompt for confirmation before installing. This step also clones [tpm](https://github.com/tmux-plugins/tpm) into `~/.config/tmux/plugins/` and installs every plugin listed in `tmux/tmux.conf`.
 
 ## Adding a new tool
 

@@ -62,6 +62,37 @@ PIP_USER: list[str] = [
     "requests",
 ]
 
+# Homebrew formulae installed via --packages. Direct config consumers plus
+# tmux-plugin runtime deps (fzf/bat/fd/zoxide).
+BREW_PACKAGES: list[str] = [
+    "tmux",
+    "neovim",
+    "nushell",
+    "gh",
+    "starship",
+    "carapace",
+    "fzf",
+    "bat",
+    "fd",
+    "zoxide",
+    "lazygit",
+    "ffmpeg",
+    "hugo",
+    "hashicorp/tap/terraform",
+]
+
+# Homebrew casks installed via --packages. GUI apps and terminals.
+BREW_CASKS: list[str] = [
+    "ghostty",
+    "raycast",
+    "rectangle",
+    "alt-tab",
+    "visual-studio-code",
+    "slack",
+    "bruno",
+    "ngrok",
+]
+
 # Excluded from directory diff walks.
 DIFF_SKIP = {"node_modules", ".git", ".DS_Store", "plugins", "history.txt", "vendor"}
 
@@ -343,8 +374,66 @@ def install_pip_user() -> None:
         _run([pip, "install", "--user", pkg])
 
 
+def _confirm(prompt: str) -> bool:
+    try:
+        ans = input(f"{prompt} [y/N]: ").strip().lower()
+    except EOFError:
+        return False
+    return ans in ("y", "yes")
+
+
+def _install_brew(packages: list[str], kind: str, list_flag: str, install_flag: str | None) -> None:
+    """Shared formula/cask installer with a single y/N prompt for the missing set."""
+    if not packages:
+        return
+    if not shutil.which("brew"):
+        print(yellow(f"  brew not found; skipping Homebrew {kind}s"))
+        return
+    listed = subprocess.run(
+        ["brew", "list", list_flag, "-1"], capture_output=True, text=True
+    ).stdout
+    installed = {line.strip() for line in listed.splitlines() if line.strip()}
+    # tap-qualified names like "hashicorp/tap/terraform" install as "terraform"
+    missing = [p for p in packages if p.rsplit("/", 1)[-1] not in installed]
+    if not missing:
+        print(dim(f"  all Homebrew {kind}s already installed"))
+        return
+    print(f"  missing ({len(missing)}): {', '.join(missing)}")
+    if not _confirm(f"  install {len(missing)} {kind}(s)?"):
+        print(dim("  skipped"))
+        return
+    cmd_prefix = ["brew", "install"] + ([install_flag] if install_flag else [])
+    for pkg in missing:
+        _run(cmd_prefix + [pkg])
+
+
+def install_brew_packages() -> None:
+    _install_brew(BREW_PACKAGES, kind="formula", list_flag="--formula", install_flag=None)
+
+
+def install_brew_casks() -> None:
+    _install_brew(BREW_CASKS, kind="cask", list_flag="--cask", install_flag="--cask")
+
+
+def install_tmux_plugins() -> None:
+    """Clone tpm and install plugins listed in tmux.conf. Idempotent."""
+    tpm = Path(os.path.expanduser("~/.config/tmux/plugins/tpm"))
+    if tpm.exists():
+        print(dim(f"  tpm already cloned at {tpm}"))
+    else:
+        tpm.parent.mkdir(parents=True, exist_ok=True)
+        _run(["git", "clone", "https://github.com/tmux-plugins/tpm", str(tpm)])
+    installer = tpm / "bin" / "install_plugins"
+    if installer.exists():
+        _run([str(installer)])
+
+
 def install_packages() -> None:
-    print(cyan("Installing NPM globals:"))
+    print(cyan("Installing Homebrew formulae:"))
+    install_brew_packages()
+    print(cyan("\nInstalling Homebrew casks:"))
+    install_brew_casks()
+    print(cyan("\nInstalling NPM globals:"))
     install_npm_globals()
     if PIPX_TOOLS:
         print(cyan("\nInstalling pipx tools:"))
@@ -352,6 +441,8 @@ def install_packages() -> None:
     if PIP_USER:
         print(cyan("\nInstalling pip --user packages:"))
         install_pip_user()
+    print(cyan("\nInstalling tmux plugins:"))
+    install_tmux_plugins()
 
 
 # --- Secrets ----------------------------------------------------------------
