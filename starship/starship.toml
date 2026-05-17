@@ -1,6 +1,6 @@
 # add_newline = false
 # Two-line prompt: info line on top, command line below
-format = """$hostname$git_branch$git_metrics$git_status$git_state$fill$nodejs$python$cmd_duration
+format = """$hostname$directory$git_branch$git_metrics$git_status$git_state$fill$nodejs$python$cmd_duration
 $character"""
 palette = "catppuccin_mocha"
 # right side aligns to last (command) line in nushell
@@ -37,11 +37,23 @@ style = 'peach'
 min_time = 0
 show_milliseconds = false
 
+[directory]
+truncation_length = 1
+truncate_to_repo = false
+truncation_symbol = ''
+format = '[$path]($style) '
+style = 'blue'
+
 [directory.substitutions]
 '~/tests/starship-custom' = 'work-project'
+'chore-int-' = 'c-'
+'feature-int-' = 'f-'
+'fix-int-' = 'x-'
 
 [git_branch]
 format =  '[$symbol$branch(:$remote_branch)]($style)'
+truncation_length = 20
+truncation_symbol = '…'
 
 [git_status]
 format = '([\[$all_status$ahead_behind\]]($style) )'
