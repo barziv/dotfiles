@@ -3,7 +3,8 @@
     "lazyvim.plugins.extras.ai.claudecode",
     "lazyvim.plugins.extras.editor.mini-files",
     "lazyvim.plugins.extras.editor.telescope",
-    "lazyvim.plugins.extras.lang.markdown"
+    "lazyvim.plugins.extras.lang.markdown",
+    "lazyvim.plugins.extras.lang.typescript"
   ],
   "install_version": 8,
   "news": {
