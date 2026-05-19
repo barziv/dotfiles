@@ -11,7 +11,7 @@
     "glob": "allow",
     "skill": "allow"
   },
-  "plugin": ["opencode-gemini-auth@latest"],
+  "plugin": ["opencode-gemini-auth@latest", "opencode-claude-auth@latest"],
   "mcp": {
     "render": {
       "type": "local",
