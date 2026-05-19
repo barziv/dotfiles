@@ -92,6 +92,7 @@ BREW_CASKS: list[str] = [
     "slack",
     "bruno",
     "ngrok",
+    "burp-suite"
 ]
 
 # Excluded from directory diff walks.
