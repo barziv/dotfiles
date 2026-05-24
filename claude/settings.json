@@ -5,17 +5,8 @@
     "CLAUDE_CODE_DISABLE_1M_CONTEXT": "1",
     "CLAUDE_CODE_DISABLE_AUTO_MEMORY": "1"
   },
-  "mcpServers": {
-    "render": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "mcp-remote",
-        "https://mcp.render.com/mcp",
-        "--header",
-        "Authorization: Bearer ${RENDER_API_KEY}"
-      ]
-    }
+  "permissions": {
+    "defaultMode": "auto"
   },
   "hooks": {
     "UserPromptSubmit": [
@@ -78,7 +69,16 @@
   "theme": "dark-ansi",
   "agentPushNotifEnabled": true,
   "skipAutoPermissionPrompt": true,
-  "permissions": {
-    "defaultMode": "auto"
+  "mcpServers": {
+    "render": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-remote",
+        "https://mcp.render.com/mcp",
+        "--header",
+        "Authorization: Bearer ${RENDER_API_KEY}"
+      ]
+    }
   }
 }
