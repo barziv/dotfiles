@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
 
-# Fetch current tmux session name
 CURRENT_NAME=$(tmux display-message -p '#S')
 STATE=$1
 
@@ -9,15 +8,35 @@ BASE_NAME=${CURRENT_NAME%_working}
 BASE_NAME=${BASE_NAME%_done}
 BASE_NAME=${BASE_NAME%_waiting}
 
+notify_waiting() {
+  local session_name=$1
+  local count
+  count=$(tmux list-sessions -F '#S' 2>/dev/null | grep -cE '_(waiting|done)$')
+
+  osascript -e "display notification \"${session_name} is waiting — ${count} session(s)\" with title \"Claude Code\" sound name \"Glass\""
+
+  # Auto-remove after 60 seconds (terminal-notifier -remove is non-blocking)
+  (sleep 60 && terminal-notifier -remove "claude_${session_name}" 2>/dev/null) &
+  disown
+
+  printf '\a'
+}
+
+clear_notification() {
+  local session_name=$1
+  terminal-notifier -remove "claude_${session_name}" 2>/dev/null
+}
+
 if [ "$STATE" == "working" ]; then
   tmux rename-session "${BASE_NAME}_working"
 elif [ "$STATE" == "done" ]; then
   tmux rename-session "${BASE_NAME}_done"
 elif [ "$STATE" == "waiting" ]; then
   tmux rename-session "${BASE_NAME}_waiting"
+  notify_waiting "$BASE_NAME"
 elif [ "$STATE" == "clear" ]; then
-  # Only trigger a rename if a suffix actually exists
   if [[ "$CURRENT_NAME" != "$BASE_NAME" ]]; then
     tmux rename-session "$BASE_NAME"
   fi
+  clear_notification "$BASE_NAME"
 fi

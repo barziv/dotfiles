@@ -31,24 +31,13 @@
         ]
       }
     ],
-    "PreToolUse": [
+    "Notification": [
       {
         "matcher": "",
         "hooks": [
           {
             "type": "command",
             "command": "~/.config/tmux/claude_status.sh waiting"
-          }
-        ]
-      }
-    ],
-    "PostToolUse": [
-      {
-        "matcher": "",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "~/.config/tmux/claude_status.sh working"
           }
         ]
       }
