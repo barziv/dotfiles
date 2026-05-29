@@ -922,6 +922,7 @@ alias c = clear
 alias ll = ls -l
 alias lt = eza --tree --level=2 --long --icons --git
 alias v = nvim
+alias n = nvim
 alias as = aerospace
 alias asr = atuin scripts run
 alias oc = opencode 
