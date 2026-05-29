@@ -54,8 +54,11 @@
     "chrome-devtools-mcp@chrome-devtools-plugins": true
   },
   "effortLevel": "high",
+  "awaySummaryEnabled": false,
   "showClearContextOnPlanAccept": true,
   "theme": "dark-ansi",
+  "preferredNotifChannel": "ghostty",
+  "inputNeededNotifEnabled": true,
   "agentPushNotifEnabled": true,
   "skipAutoPermissionPrompt": true,
   "mcpServers": {
@@ -69,5 +72,6 @@
         "Authorization: Bearer ${RENDER_API_KEY}"
       ]
     }
-  }
+  },
+  "editorMode": "vim"
 }
