@@ -57,6 +57,7 @@
   "awaySummaryEnabled": false,
   "showClearContextOnPlanAccept": true,
   "theme": "dark-ansi",
+  "editorMode": "vim",
   "preferredNotifChannel": "ghostty",
   "inputNeededNotifEnabled": true,
   "agentPushNotifEnabled": true,
@@ -72,6 +73,5 @@
         "Authorization: Bearer ${RENDER_API_KEY}"
       ]
     }
-  },
-  "editorMode": "vim"
+  }
 }
