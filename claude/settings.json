@@ -1,6 +1,6 @@
 {
   "env": {
-    "ANTHROPIC_MODEL": "claude-opus-4-7",
+    "ANTHROPIC_MODEL": "claude-opus-4-8",
     "CLAUDE_CODE_SUBAGENT_MODEL": "sonnet",
     "CLAUDE_CODE_DISABLE_1M_CONTEXT": "1",
     "CLAUDE_CODE_DISABLE_AUTO_MEMORY": "1"
@@ -68,6 +68,7 @@
   "theme": "dark-ansi",
   "editorMode": "normal",
   "preferredNotifChannel": "ghostty",
+  "autoCompactEnabled": true,
   "inputNeededNotifEnabled": true,
   "agentPushNotifEnabled": true,
   "skipAutoPermissionPrompt": true,
