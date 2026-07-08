@@ -81,6 +81,7 @@ BREW_PACKAGES: list[str] = [
     "awscli",
     "hashicorp/tap/terraform",
     "terminal-notifier",
+    "mongosh",
 ]
 
 # Homebrew casks installed via --packages. GUI apps and terminals.
