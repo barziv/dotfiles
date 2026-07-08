@@ -1,26 +1,37 @@
-# PKM System Instructions (PARA Method)
+# PKM System (Diátaxis × Dendron)
 
-You are managing my digital garden based on the PARA method.
-My digital garden is managed in `/Users/barziv/Documents/digital-garden/Docs` folder
-Always adhere to the following rules when researching, writing, or updating information:
+You help manage my digital garden at `/Users/barziv/Documents/digital-garden/Docs`.
+It uses a Diátaxis × Dendron hybrid — **folder = what the thing is**, **filename = dotted topic hierarchy**. No subfolders; the dots carry the hierarchy and one file holds everything on its topic. See `_framework.md` for the full spec. (This replaces the old PARA layout.)
 
-## Directory Structure
+## Buckets
 
-Assume the following top-level directory structure for the PKM system:
+- `reference/` — facts, configs, notes I look up (information-oriented)
+- `how-to/` — steps to accomplish one specific task
+- `project/` — active efforts with a goal (work, ideas, things I'm building/buying)
+- `moments/` — trips, experiences, events (dated things that happened)
+- `personal-growth/` — learning, self-development, running personal lists
 
-- **Projects**: `/Projects/` - Active efforts with a specific goal and deadline.
-- **Areas**: `/Areas/` - Spheres of activity with a standard to be maintained over time (e.g., Health, Finances).
-- **Resources**: `/Resources/` - Topics or interests of ongoing usefulness.
-- **Archives**: `/Archives/` - Inactive items from the other three categories.
+Add a new bucket only when content genuinely fits none of these.
 
-## Workflow Rules
+## Public vs Private
 
-1. **Automatic Resources:** Whenever you synthesize valuable knowledge, architectural insights, or reusable code snippets, automatically write or append this information to the relevant note in the `/Resources/` directory.
-2. **Project Updates:** When you complete tasks or make significant progress on larger efforts, automatically update the corresponding notes in the `/Projects/` directory to reflect the current state and next steps.
-3. **Consultation for Areas:** If a piece of information or task seems more aligned with long-term responsibilities or ongoing standards (Areas), you MUST ask me for confirmation and specific placement instructions before writing to the `/Areas/` directory.
-4. **Formatting:** Ensure all notes use clean Markdown, include relevant tags (e.g., `#resource`, `#project`), and proactively create internal links to related concepts within the digital garden.
+- Everything lives in `Private/` by default.
+- Nothing is published automatically. To publish, **manually copy** a note into `Public/` (same bucket folders) — and only when I ask.
 
-_BEFORE YOU WRITE TO THE PKM ASK FOR MY PERMISSION_
+## Naming rules
+
+- Don't repeat the folder name in the filename (the folder already says the kind).
+- Hierarchy goes in the filename, segments separated by `.`: `reference/tech.docker.awesome-compose.md`
+- Multi-word segment uses `-`: `...awesome-compose...`
+- Hebrew is allowed in filenames; keep an English topic prefix for grouping: `project/נדלן-דניאל-טל-revo.md`
+- Internal links are Obsidian wikilinks against the full filename: `[[reference/tech.git.worktrees]]`
+
+## Workflow
+
+- When you synthesize reusable knowledge (configs, snippets, insights), append it to the right `reference/` note; progress on an effort updates the matching `project/` note.
+- Use clean Markdown and create wikilinks to related notes.
+
+_BEFORE YOU WRITE TO THE PKM, ASK FOR MY PERMISSION._
 
 About my mac, I use nushell as my standard shell so when you give me commands to run they MUST be compatible with nushell
 
