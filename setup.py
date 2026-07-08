@@ -82,6 +82,7 @@ BREW_PACKAGES: list[str] = [
     "hashicorp/tap/terraform",
     "terminal-notifier",
     "mongosh",
+    "agent-browser",
 ]
 
 # Homebrew casks installed via --packages. GUI apps and terminals.
@@ -120,6 +121,7 @@ MAPPINGS: list[Entry] = [
     Entry("tmux",     "~/.config/tmux",                             "folder"),
     Entry("nushell",  "~/Library/Application Support/nushell",      "folder"),
     Entry("ccstatusline", "~/.config/ccstatusline",                  "folder"),
+    Entry("agent-browser", "~/.agent-browser",                     "per-file"),
     Entry("claude",   "~/.claude",                                  "per-file"),
     Entry("gh",       "~/.config/gh",                               "per-file"),
     Entry("gemini",   "~/.gemini",                                  "per-file"),
@@ -420,6 +422,15 @@ def install_brew_casks() -> None:
     _install_brew(BREW_CASKS, kind="cask", list_flag="--cask", install_flag="--cask")
 
 
+def install_agent_browser_chrome() -> None:
+    """Download Chrome for Testing for agent-browser. First run only; idempotent."""
+    ab = shutil.which("agent-browser")
+    if not ab:
+        print(yellow("  agent-browser not found; skipping Chrome download"))
+        return
+    _run([ab, "install"])
+
+
 def install_tmux_plugins() -> None:
     """Clone tpm and install plugins listed in tmux.conf. Idempotent."""
     tpm = Path(os.path.expanduser("~/.config/tmux/plugins/tpm"))
@@ -446,6 +457,8 @@ def install_packages() -> None:
     if PIP_USER:
         print(cyan("\nInstalling pip --user packages:"))
         install_pip_user()
+    print(cyan("\nDownloading Chrome for agent-browser:"))
+    install_agent_browser_chrome()
     print(cyan("\nInstalling tmux plugins:"))
     install_tmux_plugins()
 

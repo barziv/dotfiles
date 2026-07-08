@@ -26,9 +26,13 @@ About my mac, I use nushell as my standard shell so when you give me commands to
 
 ## Browser Automation
 
-Use the `agent-browser` CLI for ALL browser tasks. Never use the macOS `open` command or the Claude Chrome extension.
+Use the `agent-browser` CLI for ALL browser tasks (prefer it over the Playwright MCP and any `open` command). It drives its own isolated Chrome for Testing with compact, token-cheap output.
 
-`agent-browser` drives its own isolated Chrome for Testing (compact, token-cheap output). This agent has its own persistent, isolated browser profile — its own Google/X/etc. logins, separate from my personal Chrome — preset via `AGENT_BROWSER_PROFILE` (`~/.agent-browser/profiles/claude`). Log in once in the window and it persists.
+Always run agent-browser with this agent's own persistent profile flag:
+
+    --profile /Users/barziv/.agent-browser/profiles/gemini
+
+It keeps the browser isolated with its own logins (its own Google/X/etc. accounts, separate from my personal Chrome). Log in once in the window and it persists. The commands below omit the flag for brevity — include it on every call.
 
 Core loop:
 
@@ -41,4 +45,4 @@ Core loop:
 
 Run `agent-browser skills` (and `agent-browser skills get <name>`) for the full, version-matched command reference. First run only: `agent-browser install` downloads Chrome.
 
-Security: this agent has its own logged-in accounts and can run autonomously — that is a prompt-injection surface. Only point it at sites/environments I'm comfortable with it acting in.
+Security: an agent with its own logged-in accounts running autonomously is a prompt-injection surface. Only point it at sites/environments I'm comfortable with it acting in.

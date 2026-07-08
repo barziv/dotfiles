@@ -3,7 +3,8 @@
     "ANTHROPIC_MODEL": "claude-opus-4-8",
     "CLAUDE_CODE_SUBAGENT_MODEL": "sonnet",
     "CLAUDE_CODE_DISABLE_1M_CONTEXT": "1",
-    "CLAUDE_CODE_DISABLE_AUTO_MEMORY": "1"
+    "CLAUDE_CODE_DISABLE_AUTO_MEMORY": "1",
+    "AGENT_BROWSER_PROFILE": "/Users/barziv/.agent-browser/profiles/claude"
   },
   "permissions": {
     "defaultMode": "auto"
