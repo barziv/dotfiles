@@ -22,3 +22,4 @@ Assume the following top-level directory structure for the PKM system:
 
 _BEFORE YOU WRITE TO THE PKM ASK FOR MY PERMISSION_
 
+About my mac, I use nushell as my standard shell so when you give me commands to run they MUST be compatible with nushell

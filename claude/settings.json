@@ -33,7 +33,6 @@
     ],
     "Notification": [
       {
-        "matcher": "",
         "hooks": [
           {
             "type": "command",
@@ -52,7 +51,8 @@
   "enabledPlugins": {
     "slack@claude-plugins-official": true,
     "chrome-devtools-mcp@chrome-devtools-plugins": true,
-    "caveman@caveman": true
+    "caveman@caveman": false,
+    "ponytail@ponytail": true
   },
   "extraKnownMarketplaces": {
     "caveman": {
@@ -60,14 +60,21 @@
         "source": "github",
         "repo": "JuliusBrussee/caveman"
       }
+    },
+    "ponytail": {
+      "source": {
+        "source": "github",
+        "repo": "DietrichGebert/ponytail"
+      }
     }
   },
   "effortLevel": "high",
   "awaySummaryEnabled": false,
   "showClearContextOnPlanAccept": true,
+  "tui": "fullscreen",
   "theme": "dark-ansi",
   "editorMode": "normal",
-  "preferredNotifChannel": "ghostty",
+  "preferredNotifChannel": "terminal_bell",
   "autoCompactEnabled": true,
   "inputNeededNotifEnabled": true,
   "agentPushNotifEnabled": true,

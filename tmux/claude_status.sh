@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
 CURRENT_NAME=$(tmux display-message -p '#S')
+WINDOW_NAME=$(tmux display-message -p '#W')
 STATE=$1
 
 # Strip out ALL existing suffixes to find the pure base name
@@ -10,10 +11,17 @@ BASE_NAME=${BASE_NAME%_waiting}
 
 notify_waiting() {
   local session_name=$1
+  local window_name=$2
   local count
   count=$(tmux list-sessions -F '#S' 2>/dev/null | grep -cE '_(waiting|done)$')
 
-  osascript -e "display notification \"${session_name} is waiting — ${count} session(s)\" with title \"Claude Code\" sound name \"Glass\""
+  # terminal-notifier -group lets -remove find this exact notification later
+  terminal-notifier \
+    -title "Claude Code" \
+    -subtitle "${session_name} — ${window_name}" \
+    -message "waiting — ${count} session(s)" \
+    -group "claude_${session_name}" \
+    -sound Glass 2>/dev/null
 
   # Auto-remove after 60 seconds (terminal-notifier -remove is non-blocking)
   (sleep 60 && terminal-notifier -remove "claude_${session_name}" 2>/dev/null) &
@@ -33,7 +41,7 @@ elif [ "$STATE" == "done" ]; then
   tmux rename-session "${BASE_NAME}_done"
 elif [ "$STATE" == "waiting" ]; then
   tmux rename-session "${BASE_NAME}_waiting"
-  notify_waiting "$BASE_NAME"
+  notify_waiting "$BASE_NAME" "$WINDOW_NAME"
 elif [ "$STATE" == "clear" ]; then
   if [[ "$CURRENT_NAME" != "$BASE_NAME" ]]; then
     tmux rename-session "$BASE_NAME"

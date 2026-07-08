@@ -13,7 +13,7 @@
       },
       {
         "id": "3",
-        "type": "context-bar",
+        "type": "context-length",
         "color": "brightCyan",
         "metadata": {
           "display": "slider"
@@ -28,7 +28,7 @@
         "type": "session-usage",
         "color": "white",
         "metadata": {
-          "display": "slider"
+          "display": "time"
         }
       }
     ],
