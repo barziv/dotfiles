@@ -14,6 +14,7 @@ My personal configuration files, kept under version control so I can quickly boo
 | `nushell/`  | Nushell shell configuration                      |
 | `nvim/`     | Neovim configuration                             |
 | `opencode/` | OpenCode configuration                           |
+| `pi/`       | pi coding agent configuration                    |
 | `starship/` | Starship prompt configuration                    |
 | `tmux/`     | tmux terminal multiplexer configuration          |
 | `zsh/`      | Zsh shell configuration                          |

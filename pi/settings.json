@@ -1,0 +1,14 @@
+{
+  "defaultProvider": "anthropic",
+  "defaultModel": "claude-opus-4-8",
+  "defaultThinkingLevel": "medium",
+  "packages": [
+    "npm:pi-claude-oauth-adapter",
+    "npm:@ifi/oh-pi-themes"
+  ],
+  "theme": "catppuccin-mocha-bright",
+  "editorPaddingX": 0,
+  "steeringMode": "one-at-a-time",
+  "collapseChangelog": true,
+  "lastChangelogVersion": "0.80.6"
+}

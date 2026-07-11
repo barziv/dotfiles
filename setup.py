@@ -48,6 +48,7 @@ NPM_GLOBALS: list[str] = [
     "ccstatusline",
     "@google/gemini-cli",
     "opencode-ai",
+    "@earendil-works/pi-coding-agent",
     "pnpm",
     "mcp-mongo-server",
 ]
@@ -82,6 +83,7 @@ BREW_PACKAGES: list[str] = [
     "hashicorp/tap/terraform",
     "terminal-notifier",
     "mongosh",
+    "mongodb/brew/mongodb-database-tools",
     "agent-browser",
 ]
 
@@ -118,6 +120,7 @@ MAPPINGS: list[Entry] = [
     Entry("ghostty",  "~/.config/ghostty",                          "folder"),
     Entry("nvim",     "~/.config/nvim",                             "folder"),
     Entry("opencode", "~/.config/opencode",                         "folder"),
+    Entry("pi",       "~/.pi/agent",                                "per-file"),
     Entry("tmux",     "~/.config/tmux",                             "folder"),
     Entry("nushell",  "~/Library/Application Support/nushell",      "folder"),
     Entry("ccstatusline", "~/.config/ccstatusline",                  "folder"),
