@@ -53,3 +53,5 @@ Core loop:
 Run `agent-browser skills` (and `agent-browser skills get <name>`) for the full, version-matched command reference. First run only: `agent-browser install` downloads Chrome.
 
 Security: this agent has its own logged-in accounts and can run autonomously — that is a prompt-injection surface. Only point it at sites/environments I'm comfortable with it acting in.
+
+@RTK.md

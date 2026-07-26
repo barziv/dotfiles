@@ -931,6 +931,24 @@ def ff [] {
     aerospace list-windows --all | fzf --bind 'enter:execute(bash -c "aerospace focus --window-id {1}")+abort'
 }
 
+# Run claude against Azure Foundry. Key comes from $env.AI_AZURE_SECRET
+# (rendered into secrets.nu by setup.py), not a project .env.
+def claudery [...args] {
+    # EXPERIMENT: point Claude Code's Foundry endpoint at the /openai path.
+    # Likely fails — Claude Code sends Anthropic-format bodies, /openai wants
+    # OpenAI format. Trying anyway. Working proxy path = LiteLLM.
+    with-env {
+        CLAUDE_CODE_USE_FOUNDRY: "1"
+        ANTHROPIC_FOUNDRY_BASE_URL: "https://intera-ai-enhance-gpt-5-nano.services.ai.azure.com/openai"
+        ANTHROPIC_FOUNDRY_API_KEY: $env.AI_AZURE_SECRET
+        ANTHROPIC_MODEL: "gpt-5.5"
+        ANTHROPIC_DEFAULT_OPUS_MODEL: "gpt-5.5"
+        ANTHROPIC_DEFAULT_SONNET_MODEL: "gpt-5.5"
+        ANTHROPIC_DEFAULT_HAIKU_MODEL: "gpt-5.5"
+        ANTHROPIC_SMALL_FAST_MODEL: "gpt-5.5"
+    } { claude --model gpt-5.5 ...$args }
+}
+
 # Git
 alias gc = git commit -m
 alias gca = git commit -a -m

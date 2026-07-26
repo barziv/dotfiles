@@ -10,6 +10,14 @@ tmux/plugins/
 
 opencode/node_modules/
 
+# Python bytecode (setup.py)
+__pycache__/
+*.pyc
+
+# Local-only skills (personal / momentum work — not for public repo)
+claude/skills/glance/
+claude/skills/validate-gap/
+
 # Nushell runtime state (history + vendor autoloads)
 nushell/history.txt
 nushell/vendor/
