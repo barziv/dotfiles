@@ -64,6 +64,18 @@ PIP_USER: list[str] = [
     "requests",
 ]
 
+
+@dataclass(frozen=True)
+class CurlInstaller:
+    check: str   # binary that must be on PATH afterwards; skip install if already present
+    url: str     # script URL piped into sh: `curl -fsSL <url> | sh`
+
+
+# Tools installed via `curl -fsSL <url> | sh`. Skipped when `check` is on PATH.
+CURL_INSTALLERS: list[CurlInstaller] = [
+    CurlInstaller("tuicr", "tuicr.dev/install.sh"),
+]
+
 # Homebrew formulae installed via --packages. Direct config consumers plus
 # tmux-plugin runtime deps (fzf/bat/fd/zoxide).
 BREW_PACKAGES: list[str] = [
@@ -84,7 +96,6 @@ BREW_PACKAGES: list[str] = [
     "hashicorp/tap/terraform",
     "terminal-notifier",
     "mongosh",
-    "mongodb/brew/mongodb-database-tools",
     "agent-browser",
 ]
 
@@ -385,6 +396,21 @@ def install_pip_user() -> None:
         _run([pip, "install", "--user", pkg])
 
 
+def install_curl_installers() -> None:
+    if not CURL_INSTALLERS:
+        return
+    if not shutil.which("curl"):
+        print(yellow("  curl not found; skipping curl installers"))
+        return
+    for ci in CURL_INSTALLERS:
+        if shutil.which(ci.check):
+            print(dim(f"  {ci.check} already installed"))
+            continue
+        cmd = f"curl -fsSL {ci.url} | sh"
+        print(cyan(f"  $ {cmd}"))
+        subprocess.run(cmd, shell=True)
+
+
 def _confirm(prompt: str) -> bool:
     try:
         ans = input(f"{prompt} [y/N]: ").strip().lower()
@@ -461,6 +487,9 @@ def install_packages() -> None:
     if PIP_USER:
         print(cyan("\nInstalling pip --user packages:"))
         install_pip_user()
+    if CURL_INSTALLERS:
+        print(cyan("\nInstalling curl installers:"))
+        install_curl_installers()
     print(cyan("\nDownloading Chrome for agent-browser:"))
     install_agent_browser_chrome()
     print(cyan("\nInstalling tmux plugins:"))
