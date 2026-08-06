@@ -76,6 +76,12 @@ CURL_INSTALLERS: list[CurlInstaller] = [
     CurlInstaller("tuicr", "tuicr.dev/install.sh"),
 ]
 
+# GitHub CLI extensions installed via `gh extension install <repo>`. Requires
+# the `gh` formula (below) plus an authenticated gh. Skipped when already present.
+GH_EXTENSIONS: list[str] = [
+    "dlvhdr/gh-dash",
+]
+
 # Homebrew formulae installed via --packages. Direct config consumers plus
 # tmux-plugin runtime deps (fzf/bat/fd/zoxide).
 BREW_PACKAGES: list[str] = [
@@ -110,6 +116,7 @@ BREW_CASKS: list[str] = [
     "bruno",
     "ngrok",
     "burp-suite",
+    "font-fira-code-nerd-font",
     "TheBoredTeam/boring-notch/boring-notch"
 ]
 
@@ -139,6 +146,7 @@ MAPPINGS: list[Entry] = [
     Entry("agent-browser", "~/.agent-browser",                     "per-file"),
     Entry("claude",   "~/.claude",                                  "per-file"),
     Entry("gh",       "~/.config/gh",                               "per-file"),
+    Entry("gh-dash",  "~/.config/gh-dash",                          "folder"),
     Entry("gemini",   "~/.gemini",                                  "per-file"),
     Entry("git",      "~/.config/git",                              "per-file"),
     Entry("starship", "~/.config",                                  "per-file"),
@@ -411,6 +419,23 @@ def install_curl_installers() -> None:
         subprocess.run(cmd, shell=True)
 
 
+def install_gh_extensions() -> None:
+    if not GH_EXTENSIONS:
+        return
+    if not shutil.which("gh"):
+        print(yellow("  gh not found; skipping gh extensions"))
+        return
+    listed = subprocess.run(
+        ["gh", "extension", "list"], capture_output=True, text=True
+    ).stdout
+    for repo in GH_EXTENSIONS:
+        name = repo.rsplit("/", 1)[-1]
+        if name in listed:
+            print(dim(f"  gh extension {repo} already installed"))
+            continue
+        _run(["gh", "extension", "install", repo])
+
+
 def _confirm(prompt: str) -> bool:
     try:
         ans = input(f"{prompt} [y/N]: ").strip().lower()
@@ -490,6 +515,9 @@ def install_packages() -> None:
     if CURL_INSTALLERS:
         print(cyan("\nInstalling curl installers:"))
         install_curl_installers()
+    if GH_EXTENSIONS:
+        print(cyan("\nInstalling gh extensions:"))
+        install_gh_extensions()
     print(cyan("\nDownloading Chrome for agent-browser:"))
     install_agent_browser_chrome()
     print(cyan("\nInstalling tmux plugins:"))
