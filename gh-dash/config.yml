@@ -63,7 +63,7 @@ defaults:
                 hidden: true
             base:
                 width: 15
-                hidden: false
+                hidden: true
             lines:
                 width: 15
         issues:
@@ -86,6 +86,9 @@ keybindings:
         - key: d
           name: tuicr diff
           command: tuicr pr {{.PrNumber}}
+        - key: b
+          name: copy branch
+          command: printf '%s' {{.HeadRefName}} | pbcopy
 repoPaths: {}
 theme:
     colors:
