@@ -44,7 +44,7 @@ Install global packages (Homebrew formulae, npm globals, pipx tools, pip --user 
 ./setup.py --packages
 ```
 
-The package lists live at the top of `setup.py` (`BREW_PACKAGES`, `BREW_CASKS`, `NPM_GLOBALS`, `PIPX_TOOLS`, `PIP_USER`). Idempotent — packages already present are skipped. Homebrew formulae and casks list the missing items and prompt for confirmation before installing. This step also clones [tpm](https://github.com/tmux-plugins/tpm) into `~/.config/tmux/plugins/` and installs every plugin listed in `tmux/tmux.conf`.
+The package lists live at the top of `setup.py` (`BREW_PACKAGES`, `BREW_CASKS`, `NPM_GLOBALS`, `PIPX_TOOLS`, `PIP_USER`). Idempotent — packages already present are skipped. Homebrew formulae and casks list the missing items and prompt for confirmation before installing. This step also clones [tpm](https://github.com/tmux-plugins/tpm) into `~/.config/tmux/plugins/` and installs every plugin listed in `tmux/tmux.conf`, and installs [Oh My Zsh](https://ohmyz.sh) (with `--keep-zshrc`) plus the `zsh-autosuggestions` plugin.
 
 ## Adding a new tool
 

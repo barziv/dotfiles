@@ -115,6 +115,7 @@ path add "/opt/homebrew/sbin"
 path add ($env.HOME | path join ".turso")
 path add ($env.HOME | path join ".local/share/mise/shims")
 path add "/Users/barziv/.local/bin"
+path add ($env.HOME | path join ".docker/bin")
 
 
 # To load from a custom file you can use:

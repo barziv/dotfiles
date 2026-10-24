@@ -63,13 +63,21 @@
   "enabledPlugins": {
     "slack@claude-plugins-official": true,
     "chrome-devtools-mcp@chrome-devtools-plugins": true,
-    "caveman@caveman": true
+    "caveman@caveman": true,
+    "html-plan@claude-community": true,
+    "code-simplifier@anthropic-plugin-directory": true
   },
   "extraKnownMarketplaces": {
     "caveman": {
       "source": {
         "source": "github",
         "repo": "JuliusBrussee/caveman"
+      }
+    },
+    "claude-community": {
+      "source": {
+        "source": "github",
+        "repo": "anthropics/claude-plugins-community"
       }
     }
   },

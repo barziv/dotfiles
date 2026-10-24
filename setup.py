@@ -52,6 +52,7 @@ NPM_GLOBALS: list[str] = [
     "@earendil-works/pi-coding-agent",
     "pnpm",
     "mcp-mongo-server",
+    "@angular/cli",
 ]
 
 # Python CLI tools installed via pipx (each in its own venv). Libraries don't
@@ -103,6 +104,8 @@ BREW_PACKAGES: list[str] = [
     "terminal-notifier",
     "mongosh",
     "agent-browser",
+    "rtk",
+    "ripgrep",
 ]
 
 # Homebrew casks installed via --packages. GUI apps and terminals.
@@ -117,7 +120,8 @@ BREW_CASKS: list[str] = [
     "ngrok",
     "burp-suite",
     "font-fira-code-nerd-font",
-    "TheBoredTeam/boring-notch/boring-notch"
+    "hiddenbar",
+    "vorssaint",
 ]
 
 # Excluded from directory diff walks.
@@ -486,6 +490,24 @@ def install_agent_browser_chrome() -> None:
     _run([ab, "install"])
 
 
+def install_oh_my_zsh() -> None:
+    """Install Oh My Zsh and the custom plugins zsh/.zshrc loads. Idempotent."""
+    omz = Path(os.path.expanduser("~/.oh-my-zsh"))
+    if omz.exists():
+        print(dim(f"  oh-my-zsh already installed at {omz}"))
+    else:
+        # --keep-zshrc: don't clobber the symlinked ~/.zshrc; --unattended: no chsh/exec zsh
+        cmd = ('curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh'
+               ' | sh -s -- --unattended --keep-zshrc')
+        print(cyan(f"  $ {cmd}"))
+        subprocess.run(cmd, shell=True)
+    autosuggest = omz / "custom" / "plugins" / "zsh-autosuggestions"
+    if autosuggest.exists():
+        print(dim("  zsh-autosuggestions already cloned"))
+    else:
+        _run(["git", "clone", "https://github.com/zsh-users/zsh-autosuggestions", str(autosuggest)])
+
+
 def install_tmux_plugins() -> None:
     """Clone tpm and install plugins listed in tmux.conf. Idempotent."""
     tpm = Path(os.path.expanduser("~/.config/tmux/plugins/tpm"))
@@ -518,6 +540,8 @@ def install_packages() -> None:
     if GH_EXTENSIONS:
         print(cyan("\nInstalling gh extensions:"))
         install_gh_extensions()
+    print(cyan("\nInstalling Oh My Zsh:"))
+    install_oh_my_zsh()
     print(cyan("\nDownloading Chrome for agent-browser:"))
     install_agent_browser_chrome()
     print(cyan("\nInstalling tmux plugins:"))
