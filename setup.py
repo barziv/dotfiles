@@ -40,6 +40,10 @@ SECRETS: list[Secret] = [
 # perms from the source, so ensuring +x here covers every consumer.
 EXECUTABLES: list[str] = [
     "claude/statusline.sh",
+    "claude/scripts/wt-new.sh",
+    "claude/scripts/pipeline.sh",
+    "claude/scripts/hooks/commit-gate.sh",
+    "claude/scripts/hooks/plan-written.sh",
     "tmux/claude_status.sh",
     "tmux/scripts/cal.sh",
 ]
@@ -70,11 +74,15 @@ PIP_USER: list[str] = [
 class CurlInstaller:
     check: str   # binary that must be on PATH afterwards; skip install if already present
     url: str     # script URL piped into sh: `curl -fsSL <url> | sh`
+    shell: str = "sh"  # interpreter the script is piped into
+    args: str = ""     # passed to the script: `| <shell> -s -- <args>`
 
 
 # Tools installed via `curl -fsSL <url> | sh`. Skipped when `check` is on PATH.
 CURL_INSTALLERS: list[CurlInstaller] = [
     CurlInstaller("tuicr", "tuicr.dev/install.sh"),
+    # Binary only; the Claude plugin comes from claude/settings.json (enabledPlugins).
+    CurlInstaller("plannotator", "https://plannotator.ai/install.sh", "bash", "--minimal"),
 ]
 
 # GitHub CLI extensions installed via `gh extension install <repo>`. Requires
@@ -418,7 +426,7 @@ def install_curl_installers() -> None:
         if shutil.which(ci.check):
             print(dim(f"  {ci.check} already installed"))
             continue
-        cmd = f"curl -fsSL {ci.url} | sh"
+        cmd = f"curl -fsSL {ci.url} | {ci.shell}" + (f" -s -- {ci.args}" if ci.args else "")
         print(cyan(f"  $ {cmd}"))
         subprocess.run(cmd, shell=True)
 

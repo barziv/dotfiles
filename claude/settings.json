@@ -4,7 +4,9 @@
     "CLAUDE_CODE_SUBAGENT_MODEL": "sonnet",
     "CLAUDE_CODE_DISABLE_1M_CONTEXT": "1",
     "CLAUDE_CODE_DISABLE_AUTO_MEMORY": "1",
-    "AGENT_BROWSER_PROFILE": "/Users/barziv/.agent-browser/profiles/claude"
+    "AGENT_BROWSER_PROFILE": "/Users/barziv/.agent-browser/profiles/claude",
+    "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS": "1",
+    "CLAUDE_CODE_PLUGIN_DIRS": "~/.claude/mods/ticket-pipeline"
   },
   "permissions": {
     "defaultMode": "auto"
@@ -16,7 +18,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.config/tmux/claude_status.sh working"
+            "command": "~/.config/tmux/agent-sidebar/scripts/agent-state.sh working"
           }
         ]
       }
@@ -27,17 +29,28 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.config/tmux/claude_status.sh done"
+            "command": "~/.config/tmux/agent-sidebar/scripts/agent-state.sh done"
           }
         ]
       }
     ],
     "Notification": [
       {
+        "matcher": "permission_prompt|elicitation_dialog",
         "hooks": [
           {
             "type": "command",
-            "command": "~/.config/tmux/claude_status.sh waiting"
+            "command": "~/.config/tmux/agent-sidebar/scripts/agent-state.sh waiting"
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.config/tmux/agent-sidebar/scripts/agent-state.sh end"
           }
         ]
       }
@@ -49,6 +62,21 @@
           {
             "type": "command",
             "command": "rtk hook claude"
+          },
+          {
+            "type": "command",
+            "command": "~/.claude/scripts/hooks/commit-gate.sh"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.claude/scripts/hooks/plan-written.sh"
           }
         ]
       }
@@ -65,7 +93,8 @@
     "chrome-devtools-mcp@chrome-devtools-plugins": true,
     "caveman@caveman": true,
     "html-plan@claude-community": true,
-    "code-simplifier@anthropic-plugin-directory": true
+    "code-simplifier@anthropic-plugin-directory": true,
+    "plannotator@plannotator": true
   },
   "extraKnownMarketplaces": {
     "caveman": {
@@ -79,6 +108,12 @@
         "source": "github",
         "repo": "anthropics/claude-plugins-community"
       }
+    },
+    "plannotator": {
+      "source": {
+        "source": "github",
+        "repo": "backnotprop/plannotator"
+      }
     }
   },
   "effortLevel": "high",
@@ -89,6 +124,7 @@
   "editorMode": "normal",
   "preferredNotifChannel": "terminal_bell",
   "autoCompactEnabled": true,
+  "teammateMode": "auto",
   "remoteControlAtStartup": true,
   "inputNeededNotifEnabled": true,
   "agentPushNotifEnabled": true,

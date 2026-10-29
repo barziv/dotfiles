@@ -1,0 +1,6 @@
+# Personal extra files wt-new.sh copies from main/ into new worktrees,
+# on top of the repo's .worktreeinclude. One path per line; missing files are skipped.
+
+.claude/settings.local.json
+intera-api/.env
+intera-ui/.env

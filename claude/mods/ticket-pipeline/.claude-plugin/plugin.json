@@ -1,0 +1,6 @@
+{
+  "name": "ticket-pipeline",
+  "version": "0.1.0",
+  "description": "Band above the prompt: ticket pipeline (plan › review › you › code › test › CR › you) and the branch PR with CI checks, toasts and a Fix CI button",
+  "types": "./types/index.d.ts"
+}
