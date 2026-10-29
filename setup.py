@@ -130,6 +130,7 @@ BREW_CASKS: list[str] = [
     "font-fira-code-nerd-font",
     "hiddenbar",
     "vorssaint",
+    "stablyai/orca/orca",
 ]
 
 # Excluded from directory diff walks.
