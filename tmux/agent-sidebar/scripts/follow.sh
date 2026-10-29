@@ -11,5 +11,5 @@ win=${1:-$(tmux display -p '#{window_id}')}
 [ "$(tmux display -p -t "$sb" '#{window_id}')" = "$win" ] && { refresh_sidebar; exit 0; }
 
 # -d keeps focus on the window's own pane; -f makes the sidebar full height.
-tmux join-pane -d -hbf -l "$(sidebar_width)" -s "$sb" -t "$win" 2>/dev/null
+tmux join-pane -d -hf -l "$(sidebar_width)" -s "$sb" -t "$win" 2>/dev/null
 refresh_sidebar

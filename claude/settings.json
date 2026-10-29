@@ -125,6 +125,8 @@
   "preferredNotifChannel": "terminal_bell",
   "autoCompactEnabled": true,
   "teammateMode": "auto",
+  "disableAgentView": true,
+  "disabledMcpjsonServers": ["clerk"],
   "remoteControlAtStartup": true,
   "inputNeededNotifEnabled": true,
   "agentPushNotifEnabled": true,

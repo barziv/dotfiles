@@ -1,43 +1,88 @@
-#!/usr/bin/env bash
-# The sidebar process: a persistent fzf list, reloaded over a unix socket.
-#   j/k move · 1-9 jump to that session+close · enter switch+close · / search (esc ends search) · esc back to your pane · q close
+#!/bin/zsh
+# The sidebar process: draws the session list and reads one key at a time.
+#   j/k or arrows move · 1-9 jump to that session+close · enter switch+close
+#   esc back to your pane · q close
+# Signals: USR1 reloads the list, USR2 reloads and moves the cursor to the top.
+# zsh, not macOS's bash 3.2: telling a lone ESC from an arrow or focus sequence
+# needs a sub-second read timeout.
 
-source "$(dirname "$0")/common.sh"
+SCRIPTS=${0:A:h}
 
-tmux select-pane -T agent-sidebar
-rm -f "$SOCK"
+tmux select-pane -t "$TMUX_PANE" -T agent-sidebar
+tmux set -g @agent_sidebar_pid $$
 
-# Fallback refresh in case a hook was missed.
-(while sleep 5; do refresh_sidebar; done) &
-poller=$!
-trap 'kill $poller 2>/dev/null; rm -f "$SOCK"' EXIT
+integer sel=1
+names=()
+rows=()
 
-digits='1,2,3,4,5,6,7,8,9'
-nav="rebind(j,k,q,/,$digits)"
-esc_cmd='if [ "$FZF_INPUT_STATE" = hidden ]; then echo "execute-silent('"$SCRIPTS"'/focus-main.sh)"; else echo "hide-input+'"$nav"'"; fi'
+load() {
+  names=()
+  rows=()
+  local name row
+  while IFS=$'\t' read -r name row; do
+    names+=("$name")
+    rows+=("$row")
+  done < <("$SCRIPTS/list.sh")
+  (( sel > $#names )) && sel=$#names
+  (( sel < 1 )) && sel=1
+}
 
-# 1-9: jump to the Nth session, if there is one (digits type normally while searching).
-jump=()
-for n in 1 2 3 4 5 6 7 8 9; do
-  # \${o}1} spells {1} so fzf expands it after pos(), not before the transform runs.
-  jump+=(--bind "$n:transform:o={; [ \$FZF_MATCH_COUNT -ge $n ] && echo \"pos($n)+execute-silent($SCRIPTS/goto.sh \${o}1})\"")
-done
+draw() {
+  local i out=$'\e[H'
+  for i in {1..$#rows}; do
+    if (( i == sel )); then
+      out+=$'\e[35m▌\e[0m\e[1m'"$rows[$i]"$'\e[0m\e[K\n'
+    else
+      out+=" $rows[$i]"$'\e[K\n'
+    fi
+  done
+  print -rn -- "$out"$'\e[J'
+}
 
-while [ "$(tmux show -gqv @agent_sidebar_pane)" = "$TMUX_PANE" ]; do
-  : | fzf \
-    --listen "$SOCK" \
-    --with-shell 'bash -c' \
-    --ansi --no-sort --layout reverse --no-input \
-    --delimiter '\t' --with-nth 2 --track --id-nth 1 \
-    --info hidden --pointer '▌' --gutter ' ' --no-scrollbar \
-    --border none --header-border bottom \
-    --color 'pointer:magenta,current-bg:-1,current-fg:-1:bold' \
-    --bind "start:reload-sync($SCRIPTS/list.sh)" \
-    --bind 'j:down,k:up' \
-    "${jump[@]}" \
-    --bind "/:show-input+unbind(j,k,q,/,$digits)" \
-    --bind "esc:clear-query+transform:$esc_cmd" \
-    --bind 'ctrl-c:ignore,ctrl-g:ignore,ctrl-q:ignore' \
-    --bind "q:execute-silent($SCRIPTS/toggle.sh $TMUX_PANE '')" \
-    --bind "enter:execute-silent($SCRIPTS/goto.sh {1})+clear-query+hide-input+$nav"
+goto() {
+  [[ -n $names[$1] ]] || return
+  "$SCRIPTS/goto.sh" "$names[$1]"
+  sel=1
+}
+
+up() { (( sel > 1 )) && (( sel-- )); }
+down() { (( sel < $#names )) && (( sel++ )); }
+
+print -n $'\e[?25l\e[2J'
+TRAPEXIT() { print -n $'\e[?25h'; }
+TRAPUSR1() { load; draw; }
+TRAPWINCH() { load; draw; }
+TRAPUSR2() { sel=1; load; draw; }
+
+load
+draw
+while :; do
+  # The 5s timeout is the fallback refresh in case a hook was missed.
+  if ! read -s -k 1 -t 5 key; then
+    load
+    draw
+    continue
+  fi
+  case $key in
+    j) down ;;
+    k) up ;;
+    [1-9]) goto $key ;;
+    $'\n' | $'\r') goto $sel ;;
+    q) "$SCRIPTS/toggle.sh" "$TMUX_PANE" '' ;;
+    $'\e')
+      # A sequence arrives whole (arrows ESC [ A/B, focus ESC [ I/O); a lone ESC
+      # goes back to your pane.
+      seq=
+      while read -s -k 1 -t 0.02 c; do
+        seq+=$c
+        [[ $c == [A-Za-z~] ]] && break
+      done
+      case $seq in
+        '[A' | 'OA') up ;;
+        '[B' | 'OB') down ;;
+        '') "$SCRIPTS/focus-main.sh" ;;
+      esac
+      ;;
+  esac
+  draw
 done

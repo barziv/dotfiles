@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Prints fzf lines: "<session>\t<display>", one per session, with an aggregated agent badge.
+# Prints lines "<session>\t<display>", one per session, with an aggregated agent badge.
 # The first 9 get a number: pressing it in the sidebar jumps there.
 
 current=$(tmux display -p '#{session_name}')
@@ -17,9 +17,9 @@ badge() {
   esac
 }
 
-# Most recently accessed session first.
+# Most recently accessed session first; the sidebar's own parking session is hidden.
 i=0
-tmux list-sessions -F '#{session_last_attached}	#{session_name}	#{session_windows}' | sort -rn | cut -f2- | while IFS=$'\t' read -r s n; do
+tmux list-sessions -F '#{session_last_attached}	#{session_name}	#{session_windows}' | sort -rn | cut -f2- | grep -v '^_agent-sidebar	' | while IFS=$'\t' read -r s n; do
   i=$((i + 1))
   if [ "$i" -le 9 ]; then num="\033[34m$i\033[0m"; else num=' '; fi
   b=$(badge "$(awk -F'\t' -v s="$s" '$1 == s { print $2 }' <<<"$states")")
