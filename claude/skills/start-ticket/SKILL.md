@@ -16,6 +16,14 @@ Track each stage with `~/.claude/scripts/pipeline.sh set <stage> active|done|fai
 status band and the commit gate read it. If `pipeline.sh show` fails, run
 `pipeline.sh init $ARGUMENTS` first.
 
+**In T3 Code** (`$T3CODE_THREAD_ID` is set) the band isn't shown, so put the stage in this thread's
+title instead. Every time you set a stage `active` or `failed` — here or inside a skill you run,
+like /cr — rename the thread with `t3_thread_update` (`action: "rename"`, no `threadId`; load it
+with ToolSearch) to `<dir> · <stage>`, where `<dir>` is `basename "$(git rev-parse --show-toplevel)"`
+and `<stage>` is `plan`, `plan review`, `your plan review`, `code`, `test`, `CR` or `your review`.
+Add ` failed` for a failed stage. When `you` is done, rename to `<dir> · done`. In a stack
+(see the end) use `<dir> · <ID> · <stage>`, since one thread works many tickets.
+
 ## 1. Understand — grill-me
 
 Fetch the ticket with the Linear MCP (`get_issue`, plus comments and linked issues). Read the
@@ -32,7 +40,7 @@ Write `.claude/plans/$ARGUMENTS.md` (gitignored). Keep it short — one screen:
 Goal: <one sentence>
 Decisions: <bullets from the grill-me session>
 Changes: <file/module · what changes · why>, one line each
-Tests: <what proves it works>
+Tests: <the existing tests that cover it; new tests only if the user asked for them>
 Out of scope: <bullets>
 ```
 
@@ -71,8 +79,9 @@ review). If the plan turns out wrong, update the plan file and say so in one lin
 
 ## 5. Test
 
-`pipeline.sh set test active`. Run the tests, lint and typecheck for the touched packages. Add
-tests from the plan's Tests line. Fix until green. `pipeline.sh set test done`.
+`pipeline.sh set test active`. Run the existing tests, lint and typecheck for the touched
+packages. Fix until green. Don't write new tests unless the user explicitly asked for them in
+this ticket; this pipeline is not that request. `pipeline.sh set test done`.
 
 ## 6. Code review — run /cr
 
@@ -93,5 +102,26 @@ in one line and end your turn — the user's review arrives later as a message f
 
 - Feedback / annotations: address every one, re-run tests, then run the same command again.
 - Approved (LGTM): `pipeline.sh stamp`, `pipeline.sh set you done`, then commit (conventional
-  message with the ticket id) and ask before pushing or opening a PR.
+  message with the ticket id) and ask before pushing or opening a PR. When the user says push,
+  run /pre-push-review first (the push gate requires it where the GitHub review bot runs).
 - Closed without a decision: ask the user in one line whether to reopen it. Closing is not approval.
+
+## Stacked layers
+
+When `.claude/plans/stack.md` exists, this worktree holds an epic as stacked PRs (opened by
+`/ticket <ID> --stack`) and this ticket is one layer. Its parent is
+`git config branch.<branch>.stackParent`, or `main` when unset. Differences:
+
+- **Grill and plan**: read the earlier layers' plans in `.claude/plans/`; build on them, don't
+  redo them.
+- **Push**: the parent must already be on origin with its own PR. Then `git push -u origin HEAD`,
+  `gh pr create --base <parent>`, `link_pull_request` (T3), and fill the PR and status
+  (`in review`) in `stack.md`. Then say the next step in one line: `/ticket <next ID> --stack`
+  (stack it on this layer), or with `--base <branch>` for another one.
+- **Fixing a lower layer** (review feedback): `git switch` to it, fix, commit, then for each
+  branch stacked above it, from the top of each chain: `git rebase --update-refs <fixed branch>`.
+  Push the updated branches with `--force-with-lease` after asking.
+- **Parent merged**: `git fetch origin +main:refs/remotes/origin/main`, rebase the child onto
+  `origin/main` (the merged commits drop out), `git config --unset branch.<child>.stackParent`,
+  `gh pr edit <child PR> --base main`, mark the parent `merged` in `stack.md`, and delete its
+  local and remote branch after asking (the repo doesn't delete branches on merge).

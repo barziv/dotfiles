@@ -22,3 +22,9 @@ claude/skills/validate-gap/
 nushell/history.txt
 nushell/vendor/
 
+
+# Claude Code account-skill sync cache (written through the ~/.claude/skills symlink)
+claude/skills/synced/
+
+# Local settings backups
+*.bak

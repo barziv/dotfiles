@@ -11,8 +11,9 @@ the user. `~/.claude/scripts/pipeline.sh set cr active`.
 ## Loop
 
 1. Spawn a teammate using the **code-reviewer** agent type, named `code-reviewer`. Prompt:
-   the ticket id, the plan path (`.claude/plans/<ID>.md`), and "review `git diff origin/main`
-   plus untracked files".
+   the ticket id, the plan path (`.claude/plans/<ID>.md`), and "review `git diff <base>`
+   plus untracked files", where `<base>` is `~/.claude/scripts/push-review.sh base` (the stack
+   parent on a stacked branch, else origin's default branch).
 2. It may message you questions — answer from what you know (why you did something, what you
    tried). Escalate to the user only when you can't answer, then relay.
 3. It ends with findings in the fixed format below. For each:

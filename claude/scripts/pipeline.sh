@@ -37,7 +37,13 @@ case "${1:-}" in
   set)
     [ -f "$f" ] || exit 0
     case "$2" in plan | plan-review | plan-you | code | test | cr | you) ;; *) echo "unknown stage $2" >&2; exit 1 ;; esac
-    jq --arg s "$2" --arg v "$3" '.stages[$s] = $v' "$f" >"$f.tmp" && mv "$f.tmp" "$f"
+    # Going back to a stage reopens it, so every stage after it has to run again.
+    jq --arg s "$2" --arg v "$3" '
+      ["plan", "plan-review", "plan-you", "code", "test", "cr", "you"] as $order
+      | .stages[$s] = $v
+      | if $v == "active" then
+          reduce $order[($order | index($s)) + 1:][] as $later (.; .stages[$later] = "pending")
+        else . end' "$f" >"$f.tmp" && mv "$f.tmp" "$f"
     ;;
   stamp)
     [ -d "$d" ] || exit 0

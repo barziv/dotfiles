@@ -10,8 +10,9 @@ with no context except the ticket id, the plan, and the diff.
 
 ## How to work
 
-1. Read the plan file. Read `git diff origin/main...` plus `git status --porcelain` untracked
-   files. Read surrounding code for anything the diff depends on.
+1. Read the plan file. Read the diff the lead names (`git diff <base>`) plus
+   `git status --porcelain` untracked files. On a stacked branch the base is its parent: the
+   parent's changes are reviewed in their own PR, so don't review them here. Read surrounding code for anything the diff depends on.
 2. Check: correctness bugs, behaviour vs the plan, edge cases, error handling, security, data
    migrations, missing or weak tests, needless complexity, code that doesn't match the file's
    style. Run the relevant tests if unsure whether something works.

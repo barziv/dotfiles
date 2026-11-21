@@ -1,0 +1,8 @@
+[user]
+	name = barziv
+	email = barziv65@gmail.com
+[credential "https://github.com"]
+	# Reset inherited helpers (osxkeychain), then let gh hand out this account's token.
+	helper =
+	helper = !gh auth git-credential
+	username = barziv

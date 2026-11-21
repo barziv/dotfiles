@@ -1,16 +1,17 @@
 #!/usr/bin/env bash
 # wt-new.sh — new ticket worktree + tmux session, for a bare-clone layout (<root>/.git + <root>/main).
 #
-# Usage: wt-new.sh <branch> <dir> <ticket-id>
+# Usage: wt-new.sh <branch> <dir> <ticket-id> [--no-tmux]
 #   run from inside any worktree of the repo (normally <root>/main).
 #
 # Does: fetch origin/main, worktree add <root>/<dir> -b <branch> origin/main, copy gitignored
 # config (repo .worktreeinclude + ~/.claude/worktree-include), give it free ports, pnpm install,
 # start the review pipeline, open tmux session <dir> with windows nvim + claude "/start-ticket <id>".
+# --no-tmux skips the session, for callers that open the worker elsewhere (T3 Code).
 
 set -euo pipefail
 
-branch=$1 dir=$2 ticket=$3
+branch=$1 dir=$2 ticket=$3 tmux=${4:-}
 here=$(git rev-parse --show-toplevel)
 root=$(cd "$(git rev-parse --git-common-dir)/.." && pwd)
 main="$root/main"
@@ -19,7 +20,7 @@ wt="$root/$dir"
 session=${dir//[.:]/-}
 
 [ -e "$wt" ] && { echo "ERROR: $wt already exists" >&2; exit 1; }
-tmux has-session -t "=$session" 2>/dev/null && { echo "ERROR: tmux session $session already exists" >&2; exit 1; }
+[ "$tmux" != --no-tmux ] && tmux has-session -t "=$session" 2>/dev/null && { echo "ERROR: tmux session $session already exists" >&2; exit 1; }
 
 echo "▸ Fetching origin/main…"
 # No fetch refspec is configured on the bare clone, so name the ref explicitly.
@@ -66,6 +67,11 @@ echo "▸ pnpm install…"
 
 echo "▸ Starting pipeline…"
 (cd "$wt" && "$(dirname "$0")/pipeline.sh" init "$ticket")
+
+if [ "$tmux" = --no-tmux ]; then
+  echo "DONE path=$wt api=$api ui=$ui"
+  exit 0
+fi
 
 echo "▸ Opening tmux session ${session}…"
 # Windows run the default shell; commands are typed in so quitting returns to the shell.

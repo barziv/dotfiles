@@ -131,6 +131,7 @@ BREW_CASKS: list[str] = [
     "hiddenbar",
     "vorssaint",
     "stablyai/orca/orca",
+    "t3-code",
 ]
 
 # Excluded from directory diff walks.

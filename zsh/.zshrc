@@ -148,6 +148,10 @@ export PATH="/Users/barziv/.antigravity/antigravity/bin:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
 export PATH="$HOME/.docker/bin:$PATH"
 
+# Google Cloud CLI. gcloud no longer supports the system Python 3.9.
+export PATH="$HOME/google-cloud-sdk/bin:$PATH"
+export CLOUDSDK_PYTHON="/opt/homebrew/bin/python3.15"
+
 # Carapace
 export CARAPACE_BRIDGES='zsh,fish,bash,inshellisense' # optional
 source <(carapace _carapace)
@@ -155,3 +159,19 @@ source <(carapace _carapace)
 # Starship
 eval "$(starship init zsh)"
 
+
+# Vite+ bin (https://viteplus.dev)
+. "/Users/barziv/.config/vite-plus/env"
+
+# gh account follows the folder's git profile (git/profiles/*.gitconfig)
+_gh_account_by_dir() {
+  local user=$(git config --get credential.https://github.com.username 2>/dev/null)
+  if [[ -z $user ]]; then
+    unset GH_TOKEN GH_USER
+  elif [[ $GH_USER != $user ]]; then
+    export GH_TOKEN=$(gh auth token --user $user) GH_USER=$user
+  fi
+}
+autoload -Uz add-zsh-hook
+add-zsh-hook chpwd _gh_account_by_dir
+_gh_account_by_dir
