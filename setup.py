@@ -22,6 +22,11 @@ REPO = Path(__file__).resolve().parent
 SECRETS_ENV = REPO / ".secrets.env"
 ZSH_SECRETS = REPO / "zsh" / "secrets.zsh"
 NU_SECRETS  = REPO / "nushell" / "secrets.nu"
+# Work-specific Claude Code settings (e.g. autoMode) kept out of the public repo.
+# Claude Code reads autoMode only from user or managed settings, and user settings
+# are tracked here, so --managed copies this gitignored file into managed settings.
+MANAGED_SRC = REPO / ".claude-managed-settings.json"
+MANAGED_DST = Path("/Library/Application Support/ClaudeCode/managed-settings.json")
 
 
 @dataclass(frozen=True)
@@ -648,6 +653,22 @@ def report_secrets_dry_run() -> None:
     print()
 
 
+# --- Managed settings -------------------------------------------------------
+
+def install_managed() -> int:
+    """Copy MANAGED_SRC to MANAGED_DST via sudo. Missing source -> nothing to do."""
+    if not MANAGED_SRC.exists():
+        print(yellow(f"no {MANAGED_SRC.name}; nothing to install"))
+        return 0
+    for cmd in (["sudo", "mkdir", "-p", str(MANAGED_DST.parent)],
+                ["sudo", "install", "-m", "644", str(MANAGED_SRC), str(MANAGED_DST)]):
+        if _run(cmd) != 0:
+            print(red("  managed settings install failed"), file=sys.stderr)
+            return 1
+    print(green(f"  installed {MANAGED_DST} <- {MANAGED_SRC.name}"))
+    return 0
+
+
 # --- Main -------------------------------------------------------------------
 
 STATUS_COLOR = {
@@ -666,7 +687,12 @@ def main() -> int:
                         help="restrict to specific top-level entries (e.g. zsh nvim)")
     parser.add_argument("--packages", action="store_true",
                         help="install global npm/pipx/pip-user packages and exit")
+    parser.add_argument("--managed", action="store_true",
+                        help=f"install {MANAGED_SRC.name} as Claude Code managed settings (sudo) and exit")
     args = parser.parse_args()
+
+    if args.managed:
+        return install_managed()
 
     if args.packages:
         install_packages()
