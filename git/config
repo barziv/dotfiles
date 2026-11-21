@@ -9,13 +9,15 @@
 [http]
 	postBuffer = 524288000
 
-# Per-folder GitHub account. One includeIf per folder (trailing slash = whole tree).
-# The profile's credential username also picks the gh CLI account (see nushell/zsh hooks).
-[includeIf "gitdir:~/Code/dotfiles/"]
-	path = profiles/barziv.gitconfig
 [credential "https://github.com"]
 	helper = 
 	helper = !/opt/homebrew/bin/gh auth git-credential
 [credential "https://gist.github.com"]
 	helper = 
 	helper = !/opt/homebrew/bin/gh auth git-credential
+
+# Per-folder GitHub account. One includeIf per folder (trailing slash = whole tree).
+# Keep below the global credential helpers so the profiles override them.
+# The profile's credential username also picks the gh CLI account (see nushell/zsh hooks).
+[includeIf "gitdir:~/Code/dotfiles/"]
+	path = profiles/barziv.gitconfig

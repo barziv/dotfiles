@@ -2,7 +2,8 @@
 	name = barziv
 	email = barziv65@gmail.com
 [credential "https://github.com"]
-	# Reset inherited helpers (osxkeychain), then let gh hand out this account's token.
+	# Reset inherited helpers, then hand out this account's token. `gh auth git-credential`
+	# only serves the active gh account, so ask for this user's token explicitly.
 	helper =
-	helper = !gh auth git-credential
+	helper = "!f() { test \"$1\" = get && echo username=barziv && echo password=$(gh auth token --user barziv); }; f"
 	username = barziv
