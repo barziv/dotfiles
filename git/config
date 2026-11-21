@@ -1,6 +1,3 @@
-[user]
-	email = barziv65@gmail.com
-	name = barziv
 [filter "lfs"]
 	clean = git-lfs clean -- %f
 	smudge = git-lfs smudge -- %f
@@ -9,15 +6,22 @@
 [http]
 	postBuffer = 524288000
 
+# GitHub auth: hand out the token of whichever gh account the active profile names
+# (credential.https://github.com.username). Unlike `gh auth git-credential`, this works
+# when that account is not the active gh account.
 [credential "https://github.com"]
-	helper = 
-	helper = !/opt/homebrew/bin/gh auth git-credential
+	helper =
+	helper = "!f() { test \"$1\" = get || exit 0; u=$(git config credential.https://github.com.username); echo username=$u; echo password=$(gh auth token --user $u); }; f"
 [credential "https://gist.github.com"]
-	helper = 
-	helper = !/opt/homebrew/bin/gh auth git-credential
+	helper =
+	helper = "!f() { test \"$1\" = get || exit 0; u=$(git config credential.https://github.com.username); echo username=$u; echo password=$(gh auth token --user $u); }; f"
 
-# Per-folder GitHub account. One includeIf per folder (trailing slash = whole tree).
-# Keep below the global credential helpers so the profiles override them.
-# The profile's credential username also picks the gh CLI account (see nushell/zsh hooks).
+# GitHub account profiles (git/profiles/*.gitconfig). barvaz6 is the default;
+# add one includeIf per folder that needs another account (trailing slash = whole tree).
+# The profile's username also picks the gh CLI account (see nushell/zsh hooks).
+[include]
+	path = profiles/barvaz6.gitconfig
 [includeIf "gitdir:~/Code/dotfiles/"]
+	path = profiles/barziv.gitconfig
+[includeIf "gitdir:~/Code/home-lab/"]
 	path = profiles/barziv.gitconfig
