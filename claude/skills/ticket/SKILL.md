@@ -83,7 +83,9 @@ worktree and one worker thread. A branch's parent is in `git config branch.<bran
       and modes unset so they inherit yours. Not `type: "root"`: T3 only restores files on rewind
       for threads bound to a worktree.
    3. Focus it in the app: get the `environmentId` from `t3_environment_read`, then run
-      `open "t3code://threads/<environmentId>/<threadId>"`.
+      `open "<scheme>://threads/<environmentId>/<threadId>"`. `<scheme>` is the app this session
+      runs in: `barvaz-code` when `$T3CODE_CLI_PATH` is under `~/.barvaz_code/` (the Barvaz Code
+      fork), else `t3code`. A `t3code://` link always opens the official T3 Code app.
 
 6. **Update Linear**: move the issue to the team's "In Progress" state and assign it to me
    (`update_issue` with `assignee: "me"`). If the state name differs, use the team's started state.

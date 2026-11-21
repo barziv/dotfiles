@@ -119,6 +119,7 @@ BREW_PACKAGES: list[str] = [
     "agent-browser",
     "rtk",
     "ripgrep",
+    "hexamatic/tap/pihole-mcp",
 ]
 
 # Homebrew casks installed via --packages. GUI apps and terminals.

@@ -13,3 +13,9 @@
 # The profile's credential username also picks the gh CLI account (see nushell/zsh hooks).
 [includeIf "gitdir:~/Code/dotfiles/"]
 	path = profiles/barziv.gitconfig
+[credential "https://github.com"]
+	helper = 
+	helper = !/opt/homebrew/bin/gh auth git-credential
+[credential "https://gist.github.com"]
+	helper = 
+	helper = !/opt/homebrew/bin/gh auth git-credential
