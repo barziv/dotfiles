@@ -113,6 +113,7 @@ BREW_PACKAGES: list[str] = [
     "ffmpeg",
     "hugo",
     "awscli",
+    "oci-cli",
     "hashicorp/tap/terraform",
     "terminal-notifier",
     "mongosh",
